@@ -1,0 +1,19 @@
+Booking Policy:
+
+Appointments must be scheduled in advance.
+
+Cancellation Policy:
+
+Cancellations must be made at least 24 hours before the appointment.
+
+Late cancellations may result in a cancellation fee.
+
+Late Arrival:
+
+Clients arriving more than 15 minutes late may need to reschedule.
+
+No-Show Policy:
+
+Failure to attend an appointment without notice may result in restricted future bookings.
+
+For bridal and large services, a deposit may be required.
