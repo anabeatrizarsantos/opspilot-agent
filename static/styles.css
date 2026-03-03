@@ -1,0 +1,165 @@
+:root{
+    --bg: #F5F1EB;
+    --card: #FFFFFF;
+    --header: #4A1D2F;
+    --primary: #7C2D37;
+    --primaryHover: #5E1F28;
+    --bot: #D6C2B0;
+    --text: #2B1F1A;
+    --border: #E7DED6;
+  }
+  
+  *{ box-sizing: border-box; }
+  
+  body{
+    margin:0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding: 24px;
+  }
+  
+  .chat-container{
+    width: min(760px, 100%);
+    height: min(82vh, 720px);
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: 0 14px 50px rgba(0,0,0,0.10);
+    overflow: hidden;
+    display:flex;
+    flex-direction:column;
+    border: 1px solid var(--border);
+  }
+  
+  .header{
+    background: var(--header);
+    color: white;
+    padding: 16px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  
+  .header .title{
+    font-weight: 650;
+    letter-spacing: 0.4px;
+  }
+  
+  .header .subtitle{
+    font-size: 12px;
+    opacity: 0.85;
+  }
+  
+  .messages{
+    flex:1;
+    padding: 18px;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap: 12px;
+    background: linear-gradient(180deg, rgba(245,241,235,0.35), rgba(245,241,235,0.0));
+  }
+  
+  .bubble{
+    max-width: 78%;
+    padding: 12px 14px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+  }
+  
+  .bubble.user{
+    align-self:flex-end;
+    background: var(--primary);
+    color:white;
+    border-bottom-right-radius: 6px;
+  }
+  
+  .bubble.bot{
+    align-self:flex-start;
+    background: var(--bot);
+    border-bottom-left-radius: 6px;
+  }
+  
+  .composer{
+    border-top: 1px solid var(--border);
+    padding: 16px 18px;
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    background: var(--card);
+  }
+  
+  .composer-input-wrap{
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .composer textarea{
+    width: 100%;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-size: 15px;
+    line-height: 1.45;
+    font-family: inherit;
+    outline: none;
+    resize: none;
+    min-height: 52px;
+    max-height: 160px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    color: var(--text);
+  }
+  
+  .composer textarea::placeholder{
+    color: #9a8f85;
+  }
+  
+  .composer textarea:focus{
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(124,45,55,0.15);
+  }
+  
+  .send-btn{
+    flex-shrink: 0;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(124,45,55,0.25);
+  }
+  
+  .send-btn:hover{
+    background: var(--primaryHover);
+    box-shadow: 0 4px 12px rgba(124,45,55,0.3);
+    transform: translateY(-1px);
+  }
+  
+  .send-btn:active{
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(124,45,55,0.25);
+  }
+  
+  .send-btn:disabled{
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 2px 8px rgba(124,45,55,0.2);
+  }
+  
+  .hint{
+    font-size: 11px;
+    color: #9a8f85;
+    margin-top: 6px;
+  }

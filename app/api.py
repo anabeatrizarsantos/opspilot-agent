@@ -9,11 +9,14 @@ from app.tools.ticketing import save_ticket
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
+from fastapi.staticfiles import StaticFiles
 
 
 app = FastAPI(title="OpsPilot API")
 
 templates = Jinja2Templates(directory="templates")
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 class ChatRequest(BaseModel):
