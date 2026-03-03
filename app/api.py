@@ -5,6 +5,7 @@ from app.router import route
 from app.llm_client import ask_llm
 from app.main import create_ticket_from_message
 from app.tools.ticketing import save_ticket
+from app.rag import answer_with_rag
 
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -40,7 +41,7 @@ def chat(request: ChatRequest):
     decision = route(request.message)
 
     if decision.action == "answer":
-        reply = ask_llm(request.message)
+        reply = answer_with_rag(request.message)
         return ChatResponse(reply=reply)
 
     elif decision.action == "create_ticket":
