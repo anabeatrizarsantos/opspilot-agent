@@ -62,3 +62,13 @@ def ask_llm(user_message: str, system_prompt: Optional[str] = None) -> str:
 
     # Extract the assistant text from the API response
     return response.choices[0].message.content
+
+def ask_llm_messages(messages: List[Dict[str, str]], system_prompt: str) -> str:
+    response = client.chat.completions.create(
+        model=DEPLOYMENT_NAME,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            *messages,
+        ],
+    )
+    return response.choices[0].message.content

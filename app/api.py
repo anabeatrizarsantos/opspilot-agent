@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.responses import HTMLResponse
@@ -16,7 +17,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 class ChatRequest(BaseModel):
     message: str
-
+    session_id: Optional[str] = "default"
 
 class ChatResponse(BaseModel):
     reply: str
@@ -27,5 +28,5 @@ def home(request: Request):
 
 @app.post("/chat", response_model=ChatResponse)
 def chat(request: ChatRequest):
-    result = run_agent(request.message)
+    result = run_agent(request.message, session_id=request.session_id or "default")
     return ChatResponse(reply=result.reply)
