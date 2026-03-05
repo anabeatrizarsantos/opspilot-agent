@@ -1,9 +1,10 @@
 import json
 
 from app.llm_client import ask_llm
-from app.router import route
 from app.schemas import Ticket
 from app.tools.ticketing import save_ticket
+from app.agent.orchestrator import run_agent
+
 
 TICKET_SYSTEM_PROMPT = """
 You are a strict support ticket generator.
@@ -62,20 +63,9 @@ def main():
         if user_input.lower() == "exit":
             break
 
-        decision = route(user_input)
-
-        if decision.action == "answer":
-            response = ask_llm(user_input)
-            print("OpsPilot:", response)
-
-        elif decision.action == "create_ticket":
-            ticket = create_ticket_from_message(user_input)
-            path = save_ticket(ticket)
-            print(f"OpsPilot: Ticket created at {path}")
-
-        else:
-            # This should never happen because RouteDecision only allows two actions
-            print("OpsPilot: Unable to route this request.")
+        result = run_agent(user_input)
+        
+        print(f"OpsPilot: {result.reply}")
 
 
 if __name__ == "__main__":

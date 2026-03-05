@@ -1,6 +1,7 @@
 import os
 from openai import AzureOpenAI
 from dotenv import load_dotenv
+from typing import Optional, List, Dict
 
 # Load environment variables from the .env file into the process
 load_dotenv()
@@ -11,6 +12,9 @@ ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
 DEPLOYMENT_NAME = os.getenv("AZURE_OPENAI_DEPLOYMENT")
 API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION")
 
+DEFAULT_SYSTEM_PROMPT = (
+    "You are OpsPilot, an operations support AI agent that helps classify requests and assist users."
+)
 
 def _create_client() -> AzureOpenAI:
     """
@@ -39,24 +43,18 @@ def _create_client() -> AzureOpenAI:
 client = _create_client()
 
 
-def ask_llm(message: str) -> str:
-    """
-    Send a user message to the LLM and return the assistant response.
-
-    This function will become the central gateway for all agent reasoning.
-    Every router/tool later will call this instead of calling the model directly.
-    """
-
+def ask_llm(user_message: str, system_prompt: Optional[str] = None) -> str:
+    
     response = client.chat.completions.create(
         model=DEPLOYMENT_NAME,
         messages=[
             {
                 "role": "system",
-                "content": "You are OpsPilot, an operations support AI agent that helps classify requests and assist users.",
+                "content": system_prompt or DEFAULT_SYSTEM_PROMPT,
             },
             {
                 "role": "user",
-                "content": message,
+                "content": user_message,
             },
         ],
         # temperature=0.2, this model doesn't support temperature
