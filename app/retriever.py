@@ -47,23 +47,40 @@ def retrieve_top_k(query: str, k: int = 3) -> List[Dict]:
     query_vector_np = np.array([query_vector], dtype="float32")
 
     # 3) Search nearest vectors in FAISS
-    distances, indices = index.search(query_vector_np, k)
+    search_k = max(k * 3, 10)
+    distances, indices = index.search(query_vector_np, search_k)
+
+    MAX_DISTANCE = 1.2
 
     # 4) Build result list
     results: List[Dict] = []
+    seen_sources = set()
 
     for distance, idx in zip(distances[0], indices[0]):
         if idx == -1:
             continue
+        
+        if distance > MAX_DISTANCE:
+            continue
 
         entry = metadata[idx]
+        source = entry["source_file"]
+
+        if source in seen_sources:
+            continue
+
+        seen_sources.add(source)
+
         results.append(
             {
                 "distance": float(distance),
                 "text": entry["text"],
-                "source_file": entry["source_file"],
+                "source_file": source,
             }
         )
+
+        if len(results) >= k:
+            break
 
     return results
 
