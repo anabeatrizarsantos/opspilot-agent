@@ -20,7 +20,7 @@ def build_context(chunks: List[Dict]) -> str:
     """
     parts = []
     for c in chunks:
-        parts.append(f"[Source: {c['source_file']} | score={c['score']:.3f}]\n{c['text']}")
+        parts.append(f"[Source: {c['source_file']} | distance={c['distance']:.3f}]\n{c['text']}")
     return "\n\n".join(parts)
 
 

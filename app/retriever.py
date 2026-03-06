@@ -2,54 +2,75 @@ import json
 from pathlib import Path
 from typing import List, Dict
 
+import faiss
+import numpy as np
+
 from app.embeddings_client import embed_texts
-from app.vector_utils import cosine_similarity
 
 
-INDEX_FILE = Path("data/kb/index.json")
+FAISS_INDEX_FILE = Path("data/kb/faiss.index")
+METADATA_FILE = Path("data/kb/metadata.json")
 
 
-def load_index() -> List[Dict]:
+def load_index() -> faiss.Index:
     """
-    Load vector index from disk.
+    Load FAISS index from disk.
     """
-    if not INDEX_FILE.exists():
-        raise FileNotFoundError("KB index not found. Run kb_indexer first.")
+    if not FAISS_INDEX_FILE.exists():
+        raise FileNotFoundError("FAISS index not found. Run kb_indexer first.")
 
-    with open(INDEX_FILE, "r", encoding="utf-8") as f:
+    return faiss.read_index(str(FAISS_INDEX_FILE))
+
+
+def load_metadata() -> List[Dict]:
+    """
+    Load metadata from disk.
+    """
+    if not METADATA_FILE.exists():
+        raise FileNotFoundError("Metadata file not found. Run kb_indexer first.")
+
+    with open(METADATA_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
 def retrieve_top_k(query: str, k: int = 3) -> List[Dict]:
     """
-    Given a query, return top-k most similar chunks.
+    Given a query, return top-k most similar chunks using FAISS.
     """
-    index_data = load_index()
+    index = load_index()
+    metadata = load_metadata()
 
     # 1) Generate embedding for the query
     query_vector = embed_texts([query])[0]
 
-    # 2) Compute similarity against all chunks
-    scored_chunks = []
+    # 2) Convert query vector to numpy matrix with shape (1, dimension)
+    query_vector_np = np.array([query_vector], dtype="float32")
 
-    for entry in index_data:
-        score = cosine_similarity(query_vector, entry["embedding"])
-        scored_chunks.append({
-            "score": score,
-            "text": entry["text"],
-            "source_file": entry["source_file"],
-        })
+    # 3) Search nearest vectors in FAISS
+    distances, indices = index.search(query_vector_np, k)
 
-    # 3) Sort by similarity descending
-    scored_chunks.sort(key=lambda x: x["score"], reverse=True)
+    # 4) Build result list
+    results: List[Dict] = []
 
-    # 4) Return top-k
-    return scored_chunks[:k]
+    for distance, idx in zip(distances[0], indices[0]):
+        if idx == -1:
+            continue
+
+        entry = metadata[idx]
+        results.append(
+            {
+                "distance": float(distance),
+                "text": entry["text"],
+                "source_file": entry["source_file"],
+            }
+        )
+
+    return results
 
 
 if __name__ == "__main__":
     results = retrieve_top_k("How much is gel manicure?")
     for r in results:
-        print("\nScore:", r["score"])
+        print("\ndistance:", r["distance"])
         print("Source:", r["source_file"])
         print("Text:", r["text"])
